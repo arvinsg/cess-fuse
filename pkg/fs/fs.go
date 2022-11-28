@@ -271,7 +271,7 @@ func (fs *FileSystem) Unmount(mountPoint string) {
 }
 
 func (fs *FileSystem) StatFS(ctx context.Context, op *fuseops.StatFSOp) error {
-	cap := fs.cloud.Capabilities().CapacityBase
+	cap := fs.cloud.Capabilities().Base
 	if cap == nil {
 		const BLOCK_SIZE = 4096
 		const TOTAL_SPACE = 1 * 1024 * 1024 * 1024 * 1024 * 1024 // 1PB
@@ -413,7 +413,7 @@ func mapStorageError(err error) error {
 	if err == storage.ErrNoSuchKey {
 		return syscall.ENXIO
 	}
-	if err == storage.ErrFileAlreadyExists {
+	if err == storage.ErrKeyAlreadyExists {
 		return fuse.EEXIST
 	}
 	return err

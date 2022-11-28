@@ -3,13 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/fs"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	"github.com/arvinsg/cess-fuse/pkg/fs"
+	"github.com/arvinsg/cess-fuse/pkg/storage"
 	"github.com/urfave/cli"
 )
 
@@ -31,7 +31,7 @@ func main() {
 			time.Sleep(time.Second)
 			flags.Cleanup()
 		}()
-		cloud, err := store.NewCessStorage(ParseCESSConfig(flags))
+		cloud, err := storage.NewCessStorage(ParseCESSConfig(flags))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "create cess storage fail, err: %v\n", err)
 			return
@@ -57,7 +57,7 @@ func main() {
 	}
 }
 
-func registerSigINTHandler(fs *fs.FileSystem, mountPoint string) {
+func registerSigINTHandler(f *fs.FileSystem, mountPoint string) {
 	// Register for SIGINT.
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM, syscall.SIGUSR1)
@@ -67,7 +67,7 @@ func registerSigINTHandler(fs *fs.FileSystem, mountPoint string) {
 		for {
 			s := <-signalChan
 			if s == syscall.SIGUSR1 {
-				fs.SigUsr1()
+				f.SigUsr1()
 				continue
 			}
 

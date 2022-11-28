@@ -48,9 +48,6 @@ GLOBAL OPTIONS:
 TUNING OPTIONS:
    {{range category .Flags "tuning"}}{{.}}
    {{end}}
-AWS S3 OPTIONS:
-   {{range category .Flags "aws"}}{{.}}
-   {{end}}
 MISC OPTIONS:
    {{range category .Flags "misc"}}{{.}}
    {{end}}{{end}}{{if .Copyright }}

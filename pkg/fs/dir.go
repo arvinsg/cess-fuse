@@ -644,7 +644,7 @@ func (dir *Inode) renameChildren(cloud storage.ObjectBackend, prefix string,
 	}
 
 	log.Debugf("rename copied %v", copied)
-	_, err = cloud.DeleteBlobs(&DeleteBlobsInput{Items: copied})
+	_, err = cloud.DeleteBlobs(&storage.DeleteBlobsInput{Items: copied})
 	return err
 }
 
@@ -1300,7 +1300,7 @@ func (parent *Inode) LookUpInodeMaybeDir(name string, fullName string) (inode *I
 		go parent.LookUpInodeNotDir(name+"/", objectChan, errDirBlobChan)
 		if !parent.fs.flags.ExplicitDir {
 			errDirChan = make(chan error, 1)
-			dirChan = make(chan ListBlobsOutput, 1)
+			dirChan = make(chan storage.ListBlobsOutput, 1)
 			go parent.LookUpInodeDir(name, dirChan, errDirChan)
 		}
 	}
@@ -1341,11 +1341,6 @@ func (parent *Inode) LookUpInodeMaybeDir(name string, fullName string) (inode *I
 					}
 
 				}
-				// if cheap is not on, the dir blob
-				// could exist but this returned first
-				if inode.fs.flags.Cheap {
-					inode.ImplicitDir = true
-				}
 				return
 			} else {
 				checkErr[2] = fuse.ENOENT
@@ -1366,18 +1361,10 @@ func (parent *Inode) LookUpInodeMaybeDir(name string, fullName string) (inode *I
 		}
 
 		switch checking {
-		case 2:
-			if parent.fs.flags.Cheap {
-				go parent.LookUpInodeNotDir(name+"/", objectChan, errDirBlobChan)
-			}
 		case 1:
 			if parent.fs.flags.ExplicitDir {
 				checkErr[2] = fuse.ENOENT
 				goto doneCase
-			} else if parent.fs.flags.Cheap {
-				errDirChan = make(chan error, 1)
-				dirChan = make(chan ListBlobsOutput, 1)
-				go parent.LookUpInodeDir(name, dirChan, errDirChan)
 			}
 			break
 		doneCase:

@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/arvinsg/cess-fuse/storage"
+	"github.com/arvinsg/cess-fuse/pkg/storage"
 	"github.com/jacobsa/fuse"
 	"github.com/jacobsa/fuse/fuseops"
 )
@@ -86,7 +86,7 @@ func (fh *FileHandle) initMPU() {
 
 	fs := fh.inode.fs
 	fh.mpuName = &fh.key
-	resp, err := fh.cloud.MultipartBlobBegin(&MultipartBlobBeginInput{
+	resp, err := fh.cloud.MultipartBlobBegin(&storage.MultipartBlobBeginInput{
 		Key:         *fh.mpuName,
 		ContentType: fs.flags.GetMimeType(*fh.mpuName),
 	})

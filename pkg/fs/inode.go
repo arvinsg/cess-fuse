@@ -11,7 +11,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/arvinsg/cess-fuse/storage"
+	"github.com/arvinsg/cess-fuse/pkg/storage"
 	"github.com/jacobsa/fuse"
 	"github.com/jacobsa/fuse/fuseops"
 	"golang.org/x/sys/unix"
@@ -158,13 +158,13 @@ func (inode *Inode) cloud() (cloud storage.ObjectBackend, path string) {
 			cloud = p.dir.cloud
 			// the error backend produces a mount.err file
 			// at the root and is not aware of prefix
-			_, isErr := cloud.(StorageBackendInitError)
+			_, isErr := cloud.(storage.ObjectBackendInitError)
 			if !isErr {
 				// we call init here instead of
 				// relying on the wrapper to call init
 				// because we want to return the right
 				// prefix
-				if c, ok := cloud.(*StorageBackendInitWrapper); ok {
+				if c, ok := cloud.(*storage.ObjectBackendInitWrapper); ok {
 					err := c.Init("")
 					isErr = err != nil
 				}
@@ -287,7 +287,7 @@ func (inode *Inode) isDir() bool {
 }
 
 // LOCKS_REQUIRED(inode.mu)
-func (inode *Inode) fillXattrFromHead(resp *HeadBlobOutput) {
+func (inode *Inode) fillXattrFromHead(resp *storage.HeadBlobOutput) {
 	inode.userMetadata = make(map[string][]byte)
 
 	if resp.ETag != nil {

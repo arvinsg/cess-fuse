@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/arvinsg/cess-fuse/pkg/storage"
 	"github.com/arvinsg/cess-fuse/pkg/utils"
-	"github.com/arvinsg/cess-fuse/storage"
 	"github.com/jacobsa/fuse"
 	"github.com/jacobsa/fuse/fuseutil"
 	"github.com/sirupsen/logrus"
@@ -17,7 +17,7 @@ func MountFS(ctx context.Context, cloud storage.ObjectBackend, flags *Flags) (*F
 	mountCfg := &fuse.MountConfig{
 		FSName:                  "CESS",
 		Options:                 flags.MountOptions,
-		ErrorLogger:             utils.GetStdLogger(NewLogger("fuse"), logrus.ErrorLevel),
+		ErrorLogger:             utils.GetStdLogger(utils.NewLogger("fuse"), logrus.ErrorLevel),
 		DisableWritebackCaching: true,
 	}
 
@@ -25,7 +25,7 @@ func MountFS(ctx context.Context, cloud storage.ObjectBackend, flags *Flags) (*F
 		fuseLog := utils.GetLogger("fuse")
 		fuseLog.Level = logrus.DebugLevel
 		log.Level = logrus.DebugLevel
-		mountCfg.DebugLogger = GetStdLogger(fuseLog, logrus.DebugLevel)
+		mountCfg.DebugLogger = utils.GetStdLogger(fuseLog, logrus.DebugLevel)
 	}
 
 	fs := NewFileSystem(ctx, cloud, flags)

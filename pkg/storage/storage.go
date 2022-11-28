@@ -51,13 +51,13 @@ type Capabilities struct {
 }
 
 type CapacityBase struct {
-	BlockSize       int
-	Blocks          int
-	BlockFree       int
-	BlocksAvailable int
-	IoSize          int
-	Inodes          int
-	InodesFree      int
+	BlockSize       uint32
+	Blocks          uint64
+	BlocksFree      uint64
+	BlocksAvailable uint64
+	IoSize          uint32
+	Inodes          uint64
+	InodesFree      uint64
 }
 
 type HeadBlobInput struct {
